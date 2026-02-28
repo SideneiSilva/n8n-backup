@@ -1,0 +1,222 @@
+{
+  "updatedAt": "2026-02-28T02:22:09.327Z",
+  "createdAt": "2026-02-28T01:48:14.964Z",
+  "id": "eFPZxsAtV4Jmtsqh",
+  "name": "Restore Backup",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "2eb47ea0-ddae-43b0-bb6f-cb4372f69482",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.dono }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.repositorio }}",
+          "mode": "name"
+        },
+        "filePath": "={{ $json.arquirvo }}",
+        "additionalParameters": {
+          "reference": "={{ $json.versao }}"
+        }
+      },
+      "id": "745076de-b3b4-4f1d-9057-f1eac96df5a3",
+      "name": "GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "6d4d8e88-ccde-4683-9088-72f2e9e1f23a",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "ER8zVDXRZerceSKN",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "id": "b0ef8b1e-0516-459e-8be3-e43ded59fcb0",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $json.data.id }}",
+          "mode": "id"
+        },
+        "workflowObject": "={{ JSON.stringify($json.data) }}",
+        "requestOptions": {}
+      },
+      "id": "f3e7beb0-0f57-4542-b68b-583d91a044b0",
+      "name": "n8n",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "nb4MbvdWVNur7UQP",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "200d0b65-a68f-47d6-b6ea-1df49f417ecc",
+              "name": "arquirvo",
+              "value": "cliente-x/B0KrKpyQVwHPFero.json",
+              "type": "string"
+            },
+            {
+              "id": "0cf92acd-3e55-4618-881e-97c2c60db6bc",
+              "name": "dono",
+              "value": "SideneiSilva",
+              "type": "string"
+            },
+            {
+              "id": "257bb5a0-e186-44a5-a21a-fcd751f9f567",
+              "name": "repositorio",
+              "value": "n8n-backup",
+              "type": "string"
+            },
+            {
+              "id": "33c323a3-f39d-482b-aaf3-1056d08db2d6",
+              "name": "versao",
+              "value": "d700ce18e15a176cc7e6d66ed443937bf77d701d",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c1e2e69-3460-4ad3-9237-8975b54b9ae4",
+      "name": "Info Basica",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Informar no no Informações Básicas:\no nome do arquivo que  restaurar.\nExemplo: \ncliente-x/B0KrKpyQVwHPFero.json\nE a chave de versão do commit.\nExemplo:\nd700ce18e15a176cc7e6d66ed443937bf77d701d",
+        "height": 176,
+        "width": 368,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        -528
+      ],
+      "typeVersion": 1,
+      "id": "1afbd8d1-b19b-48fb-a9ca-28ca3d9ccc1b",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Info Basica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Basica": {
+      "main": [
+        [
+          {
+            "node": "GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0966c272-c3ae-4451-a7e6-c2893a879f17",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-28T01:48:14.964Z",
+      "createdAt": "2026-02-28T01:48:14.964Z",
+      "role": "workflow:owner",
+      "workflowId": "eFPZxsAtV4Jmtsqh",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
