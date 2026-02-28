@@ -1,0 +1,517 @@
+{
+  "updatedAt": "2026-01-16T01:52:42.760Z",
+  "createdAt": "2026-01-16T01:52:42.760Z",
+  "id": "PeshZu2VZphL1KwN",
+  "name": "Ravex Eventos",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://webservice.risco.ravex.com.br/api/WebServices/ObterPacotePosicoesV3\n\n\n\n",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "pIdInicial",
+              "value": "={{ $json.pIdInicial }}"
+            },
+            {
+              "name": "pQuantidade",
+              "value": "1000"
+            },
+            {
+              "name": "pIncluirPosicaoImediata",
+              "value": "false"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -224,
+        288
+      ],
+      "id": "19a9854a-c14c-4821-9210-e770595fb61b",
+      "name": "Get eventos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webservice.risco.ravex.com.br/Token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "integracaosmartlog@smart.log.br"
+            },
+            {
+              "name": "password",
+              "value": "4dc984b225c9d15dde7ee058658bae6b"
+            },
+            {
+              "name": "grant_type",
+              "value": "password"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1120,
+        288
+      ],
+      "id": "ed28dbc2-86e3-4013-88ea-8efd88a89c84",
+      "name": "Post / Tokem"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $getWorkflowStaticData('global');\nif (!data.estadoPlacas) data.estadoPlacas = {};\n\n// ================= CONFIGURAÇÃO DOS PONTOS =================\nconst PONTOS = [\n  {\n    id: \"223473\",\n    nome: \"Barry Omega-X\",\n    lat: -22.8083782,\n    lon: -46.2854767,\n    raio: 300\n  },\n  {\n    id: \"223472\",\n    nome: \"Barry Fábrica\",\n    lat: -22.8343143,\n    lon: -46.3231583,\n    raio: 300\n  }\n];\n\n// ================= FUNÇÃO DISTÂNCIA =================\nfunction distanciaMetros(lat1, lon1, lat2, lon2) {\n  const R = 6371000;\n  const toRad = v => v * Math.PI / 180;\n\n  const dLat = toRad(lat2 - lat1);\n  const dLon = toRad(lon2 - lon1);\n\n  const a =\n    Math.sin(dLat / 2) ** 2 +\n    Math.cos(toRad(lat1)) *\n    Math.cos(toRad(lat2)) *\n    Math.sin(dLon / 2) ** 2;\n\n  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));\n}\n\n// ================= FORMATA DATA UTC =================\nfunction dataHoraUTCFormatada(isoUtc) {\n  const d = new Date(isoUtc);\n\n  const dd = String(d.getUTCDate()).padStart(2, '0');\n  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');\n  const yyyy = d.getUTCFullYear();\n\n  const hh = String(d.getUTCHours()).padStart(2, '0');\n  const mi = String(d.getUTCMinutes()).padStart(2, '0');\n  const ss = String(d.getUTCSeconds()).padStart(2, '0');\n\n  return `${dd}-${mm}-${yyyy} ${hh}:${mi}:${ss}`;\n}\n\n// ================= PROCESSAMENTO =================\nconst eventos = items[0].json.ListaPosicoes || [];\nconst saidaEventos = [];\n\nfor (const ev of eventos) {\n\n  if (!ev.Placa || ev.GPS_Latitude == null || ev.GPS_Longitude == null) {\n    continue;\n  }\n\n  const lat = ev.GPS_Latitude;\n  const lon = ev.GPS_Longitude;\n\n  // Identifica ponto\n  let ponto = null;\n  for (const p of PONTOS) {\n    if (distanciaMetros(lat, lon, p.lat, p.lon) <= p.raio) {\n      ponto = p;\n      break;\n    }\n  }\n  if (!ponto) continue;\n\n  const chave = `${ev.Placa}_${ponto.id}`;\n  const dataHoraEvento = dataHoraUTCFormatada(ev.Evento_Datahora);\n\n  // ================= CHEGADA =================\n  if (ev.GPS_Velocidade === 0 && ev.Ignicao === false) {\n\n    // Registra chegada apenas se não existir\n    if (!data.estadoPlacas[chave]) {\n      data.estadoPlacas[chave] = {\n        placa: ev.Placa,\n        ponto: ponto.nome,\n        chegada: dataHoraEvento\n      };\n\n      // Emite CHEGADA\n      saidaEventos.push({\n        tipo: \"CHEGADA\",\n        placa: ev.Placa,\n        ponto: ponto.nome,\n        chegada: dataHoraEvento\n      });\n    }\n\n    continue;\n  }\n\n  // ================= SAÍDA =================\n  if (ev.GPS_Velocidade > 0 && ev.Ignicao === true) {\n\n    const registro = data.estadoPlacas[chave];\n    if (registro && registro.chegada) {\n\n      // Emite SAÍDA com contexto\n      saidaEventos.push({\n        tipo: \"SAIDA\",\n        placa: ev.Placa,\n        ponto: ponto.nome,\n        chegada: registro.chegada,\n        saida: dataHoraEvento\n      });\n\n      // Limpa estado após saída\n      delete data.estadoPlacas[chave];\n    }\n  }\n}\n\nreturn saidaEventos.map(e => ({ json: e }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        576
+      ],
+      "id": "bc6c5c3e-5d06-41ea-a1c0-125c8889aabe",
+      "name": "Tratar eventos Ravex"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "429683C4C977415CAAFCfsRVFR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.texto }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $json.number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ee9ddb79-4733-4c94-a718-c712fc96577b",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $json;\n\n// Grupos ou números\nconst numeros = [\n  \"120363423630747075@g.us\"\n];\n\nreturn numeros.map(n => ({\n  json: {\n    ...base,\n    number: n\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        480
+      ],
+      "id": "c50f106b-13d6-41ae-890a-3311b20bcc6c",
+      "name": "Edita Numero Whats"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $getWorkflowStaticData('global');\n\n// Se nunca houve histórico salvo, força busca ampla\nlet pIdInicial;\n\nif (typeof data.ultimoIdPosicao === 'number' && data.ultimoIdPosicao > 0) {\n  pIdInicial = data.ultimoIdPosicao;\n} else {\n  // valor bem antigo para forçar 7 dias com certeza\n  pIdInicial = 999; \n}\n\nreturn [{\n  json: {\n    pIdInicial\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        352
+      ],
+      "id": "b70083d3-b831-443a-a921-ccfdf3b1eb8c",
+      "name": "Ler Ultimo IdPosicao"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $getWorkflowStaticData('global');\n\n// Se nunca houve ID salvo, força histórico (7 dias)\nlet maxId =\n  typeof data.ultimoIdPosicao === 'number' && data.ultimoIdPosicao > 0\n    ? data.ultimoIdPosicao\n    : 1; // QUALQUER valor diferente de 0\n\n// Percorre TODOS os items\nfor (const item of items) {\n  const lista = item.json.ListaPosicoes || [];\n\n  for (const ev of lista) {\n    const id = Number(ev.IdPosicao);\n    if (!isNaN(id) && id > maxId) {\n      maxId = id;\n    }\n  }\n}\n\n// Salva apenas se avançou\nif (!data.ultimoIdPosicao || maxId > data.ultimoIdPosicao) {\n  data.ultimoIdPosicao = maxId;\n}\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        576
+      ],
+      "id": "79835354-08f3-44e4-b826-9d0fdfdcb029",
+      "name": "Salvar Ultimo IdPosicao"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -672,
+        288
+      ],
+      "id": "860e287e-b073-4fc6-b36c-eb733ad20698",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 20
+            }
+          ]
+        }
+      },
+      "id": "bd64e068-17f5-4bea-9a73-44a0bc420337",
+      "name": "Gatilho de agendamento (1min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1568,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $getWorkflowStaticData('global');\n\nif (!data.eventosNotificados) {\n  data.eventosNotificados = {};\n}\n\nconst novos = [];\n\nfor (const item of items) {\n  const ev = item.json;\n\n  const chave =\n    ev.IdPosicao ||\n    `${ev.Placa}_${ev.Evento}_${ev.EventoDatahora}`;\n\n  if (data.eventosNotificados[chave]) {\n    continue;\n  }\n\n  data.eventosNotificados[chave] = true;\n  novos.push(item);\n}\n\nreturn novos;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        576
+      ],
+      "id": "d96a1b74-5c67-4713-9d0a-e72a768a78f8",
+      "name": "Filtrar eventos novos para Whats"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawToken = $json.access_token;\n\n// remove QUALQUER caractere não imprimível\nconst tokenLimpo = rawToken.replace(/[^\\x20-\\x7E]/g, '');\n\nreturn [\n  {\n    json: {\n      ...$json,\n      access_token: tokenLimpo\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        288
+      ],
+      "id": "07bd51d8-8b96-494f-a29e-6e8ae71c4fdb",
+      "name": "Limpa Token"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lista = items[0].json.ListaPosicoes || [];\nconst placasSet = new Set();\n\nfor (const ev of lista) {\n  if (ev.Placa) {\n    placasSet.add(ev.Placa);\n  }\n}\n\nreturn [\n  {\n    json: {\n      placas: Array.from(placasSet).sort()\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        384
+      ],
+      "id": "f3008611-85ea-4cfa-ae02-87846ed134fa",
+      "name": "Localizar Placas"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lista = items[0].json.ListaPosicoes || [];\n\n// Mapa por placa\nconst mapa = {};\n\n// Classificação dos estados ignorados\nfunction classificarEstado(ev) {\n  const vel = ev.GPS_Velocidade;\n  const ign = ev.Ignicao;\n\n  if (vel === 0 && ign === true) return \"Parado c/ ignição ligada\";\n  if (vel > 0 && ign === false) return \"Movimento c/ ignição desligada\";\n  return null; // não é ignorado\n}\n\n// Formata data/hora UTC\nfunction formatarDataHora(isoUtc) {\n  if (!isoUtc) return null;\n  const d = new Date(isoUtc);\n\n  const yyyy = d.getUTCFullYear();\n  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');\n  const dd = String(d.getUTCDate()).padStart(2, '0');\n  const hh = String(d.getUTCHours()).padStart(2, '0');\n  const mi = String(d.getUTCMinutes()).padStart(2, '0');\n  const ss = String(d.getUTCSeconds()).padStart(2, '0');\n\n  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;\n}\n\n// Processa eventos\nfor (const ev of lista) {\n  const tipo = classificarEstado(ev);\n  if (!tipo) continue;\n\n  const placa = ev.Placa || \"SEM_PLACA\";\n\n  if (!mapa[placa]) {\n    mapa[placa] = [];\n  }\n\n  mapa[placa].push({\n    evento: tipo,\n    datahora: formatarDataHora(ev.Evento_Datahora),\n    velocidade: ev.GPS_Velocidade,\n    ignicao: ev.Ignicao,\n    IdPosicao: ev.IdPosicao || null\n  });\n}\n\n// Ordena eventos por data/hora\nfor (const placa in mapa) {\n  mapa[placa].sort((a, b) => {\n    if (!a.datahora || !b.datahora) return 0;\n    return a.datahora.localeCompare(b.datahora);\n  });\n}\n\n// Monta saída organizada\nconst resultado = Object.entries(mapa).map(([placa, eventos]) => ({\n  json: {\n    placa,\n    total_eventos: eventos.length,\n    eventos\n  }\n}));\n\nreturn resultado;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        192
+      ],
+      "id": "2b408748-87dc-4e1a-ba3f-14906df2be72",
+      "name": "Auditoria organizada (placa × data/hora × evento)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $getWorkflowStaticData('global');\n\n// Data atual no horário local (Brasil)\nconst agora = new Date();\nconst yyyy = agora.getFullYear();\nconst mm = String(agora.getMonth() + 1).padStart(2, '0');\nconst dd = String(agora.getDate()).padStart(2, '0');\nconst hoje = `${yyyy}-${mm}-${dd}`;\n\n// Inicializa controle\nif (!data.dataUltimoReset) {\n  data.dataUltimoReset = hoje;\n}\n\n// Se virou o dia\nif (data.dataUltimoReset !== hoje) {\n  // ❌ NÃO limpa estadoPlacas\n  // ✔️ Use aqui apenas para logs/auditoria, se quiser\n\n  data.dataUltimoReset = hoje;\n  console.log(`Virada de dia registrada (local): ${hoje}`);\n}\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        288
+      ],
+      "id": "f2c335cf-33eb-4b8c-9305-f8dc7f735e1b",
+      "name": "Reset Diário"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Agrupa eventos por placa\nconst mapa = {};\n\nfor (const item of items) {\n  const { tipo, placa, ponto, chegada, saida } = item.json;\n\n  if (!mapa[placa]) {\n    mapa[placa] = [];\n  }\n\n  if (tipo === \"CHEGADA\") {\n    mapa[placa].push(\n      `• 📥 *Chegada* (${ponto})\\n  ⏱ ${chegada}`\n    );\n  }\n\n  if (tipo === \"SAIDA\") {\n    mapa[placa].push(\n      `• 🔚 *Saída* (${ponto})\\n  ⏱ Chegou: ${chegada}\\n  🚦 Saiu: ${saida}`\n    );\n  }\n}\n\n// Monta texto final\nconst blocos = Object.entries(mapa).map(([placa, eventos]) => {\n  return `🚚 *Placa ${placa}*\\n${eventos.join(\"\\n\")}`;\n});\n\nconst texto =\n`📍 *Eventos de Veículos*\n\n${blocos.join(\"\\n\\n\")}\n\n💼 Smart Serviços Logísticos`;\n\nreturn [\n  {\n    json: {\n      texto\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        576
+      ],
+      "id": "33df0e7e-ca7d-4fce-85d7-6ade36450db5",
+      "name": "Agrupa Eventos Placas"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lista = items[0].json.ListaPosicoes || [];\n\nlet datas = [];\nlet diasSet = new Set();\n\nfor (const ev of lista) {\n\n  // Compatível com os dois cenários\n  const dataEvento =\n    ev.Evento_Datahora ||   // cenário antigo\n    ev.EventoDatahora;      // cenário atual\n\n  if (!dataEvento) continue;\n\n  const d = new Date(dataEvento);\n  datas.push(d);\n\n  const yyyy = d.getUTCFullYear();\n  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');\n  const dd = String(d.getUTCDate()).padStart(2, '0');\n\n  diasSet.add(`${yyyy}-${mm}-${dd}`);\n}\n\nif (datas.length === 0) {\n  return [{\n    json: {\n      mensagem: \"Nenhum evento retornado pela API\",\n      debug_exemplo_item: lista[0] || null\n    }\n  }];\n}\n\ndatas.sort((a, b) => a - b);\n\nreturn [{\n  json: {\n    total_eventos: datas.length,\n    data_minima: datas[0].toISOString(),\n    data_maxima: datas[datas.length - 1].toISOString(),\n    dias_encontrados: Array.from(diasSet).sort()\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "af05c058-98f3-4dab-b8b2-1108217aac6e",
+      "name": "Localizar Data dos Eventos1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "servicos@smart.log.br",
+        "toEmail": "=sidenei.silva@smart.log.br",
+        "subject": "📍 Eventos Chegada de veículo para carregamento - Barry / Omega",
+        "html": "=\n<pre style=\"font-family: Arial, Helvetica, sans-serif; white-space: pre-wrap;\">\n{{$json[\"texto\"]}}\n</pre>\n\n\n",
+        "options": {
+          "attachments": "data"
+        }
+      },
+      "id": "d2c2c8a9-f686-4100-b327-58cfbcc4a49d",
+      "name": "Enviar E-mail",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        672
+      ],
+      "webhookId": "4fcc2337-aa23-4f25-bb0a-1dc86d3ae4d5",
+      "credentials": {
+        "smtp": {
+          "id": "5aY1bDfu3d81xhBJ",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Post / Tokem": {
+      "main": [
+        [
+          {
+            "node": "Ler Ultimo IdPosicao",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get eventos": {
+      "main": [
+        [
+          {
+            "node": "Localizar Placas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Auditoria organizada (placa × data/hora × evento)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Localizar Data dos Eventos1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Salvar Ultimo IdPosicao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tratar eventos Ravex": {
+      "main": [
+        [
+          {
+            "node": "Filtrar eventos novos para Whats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edita Numero Whats": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Ultimo IdPosicao": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Salvar Ultimo IdPosicao": {
+      "main": [
+        [
+          {
+            "node": "Tratar eventos Ravex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Limpa Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho de agendamento (1min)": {
+      "main": [
+        [
+          {
+            "node": "Reset Diário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar eventos novos para Whats": {
+      "main": [
+        [
+          {
+            "node": "Agrupa Eventos Placas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpa Token": {
+      "main": [
+        [
+          {
+            "node": "Get eventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset Diário": {
+      "main": [
+        [
+          {
+            "node": "Post / Tokem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupa Eventos Placas": {
+      "main": [
+        [
+          {
+            "node": "Edita Numero Whats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c640c95b-2876-418b-9487-c90bc328786b",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T01:52:42.760Z",
+      "createdAt": "2026-01-16T01:52:42.760Z",
+      "role": "workflow:owner",
+      "workflowId": "PeshZu2VZphL1KwN",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
