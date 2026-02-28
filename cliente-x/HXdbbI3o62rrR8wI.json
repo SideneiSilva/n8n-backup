@@ -1,0 +1,490 @@
+{
+  "updatedAt": "2026-02-23T11:28:51.100Z",
+  "createdAt": "2026-01-16T01:39:50.714Z",
+  "id": "HXdbbI3o62rrR8wI",
+  "name": "Apresentação E-mail/Whats Chegada Veículo - Barry",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "b577b201-14d4-400b-8171-c301530091bf",
+      "name": "Gatilho de agendamento (1min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1120,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1VvripsULdhJyj_HQFYSrtRkSwMhob5jBGvNzcO-KcVk/edit?gid=1008336644",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1008336644,
+          "mode": "list",
+          "cachedResultName": "Respostas ao formulário 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VvripsULdhJyj_HQFYSrtRkSwMhob5jBGvNzcO-KcVk/edit#gid=1008336644"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "detectAutomatically",
+              "readRowsUntil": "firstEmptyRow"
+            }
+          }
+        }
+      },
+      "id": "f8e9b14d-a162-4999-940a-c48210bb0dd1",
+      "name": "Ler planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UtT6UeplLnzrCyY7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lê todas as linhas de entrada\nconst linhas = $input.all().map(l => l.json);\n\n// Filtra apenas as linhas sem \"OK\" na coluna E-MAIL ENVIADO\nconst novas = linhas.filter(l =>\n  (l['E-MAIL ENVIADO'] || '')\n    .toString()\n    .trim()\n    .toUpperCase() !== 'OK'\n);\n\nif (novas.length === 0) {\n  console.log('⚠️ Nenhuma nova linha para envio.');\n  return [];\n}\n\n// Função para extrair o ID do Google Drive\nfunction extrairIdDrive(url) {\n  try {\n    if (!url) return null;\n    if (url.includes('/d/')) return url.split('/d/')[1].split('/')[0];\n    if (url.includes('id=')) return url.split('id=')[1].split('&')[0];\n    return null;\n  } catch {\n    return null;\n  }\n}\n\n// Monta os dados finais\nreturn novas.map(item => {\n  const idImagem = extrairIdDrive(item['CONFIRMAÇÃO POR IMAGEM']);\n  const temImagem = Boolean(idImagem);\n\n  const corpoComImagem = `🚚 <strong>Apresentação chegada Veículo para carregamento:</strong><br><br>\n📅 <strong>Carimbo de data/hora:</strong> ${item['Carimbo de data/hora'] || 'não informado'}<br>\n👤 <strong>Nome:</strong> ${item['NOME'] || 'não informado'}<br>\n🚗 <strong>Placa:</strong> ${item['PLACA DO VEICULO'] || item['PLACA DO VEÍCULO'] || 'não informado'}<br>\n📞 <strong>Telefone:</strong> ${item['TELEFONE DE CONTATO'] || 'não informado'}<br>\n🏭 <strong>Local de embarque:</strong> ${item['LOCAL DE EMBARQUE'] || 'não informado'}<br>\n📸 <strong>Imagem anexada:</strong><br>\n<div style='text-align:center;margin-top:10px;'>\n  <img src='cid:data' style='width:600px;border-radius:10px;'>\n</div><br>`;\n\n  const corpoSemImagem = `🚚 <strong>Apresentação chegada Veículo para carregamento:</strong><br><br>\n📅 <strong>Carimbo de data/hora:</strong> ${item['Carimbo de data/hora'] || 'não informado'}<br>\n👤 <strong>Nome:</strong> ${item['NOME'] || 'não informado'}<br>\n🚗 <strong>Placa:</strong> ${item['PLACA DO VEICULO'] || item['PLACA DO VEÍCULO'] || 'não informado'}<br>\n📞 <strong>Telefone:</strong> ${item['TELEFONE DE CONTATO'] || 'não informado'}<br>\n🏭 <strong>Local de embarque:</strong> ${item['LOCAL DE EMBARQUE'] || 'não informado'}<br><br>\n⚠️ <strong>Atenção:</strong> Nenhuma imagem foi anexada nesta apresentação.<br><br>`;\n\n  return {\n    json: {\n      corpo_msg: temImagem ? corpoComImagem : corpoSemImagem,\n      id_imagem: idImagem,\n      tem_imagem: temImagem,\n      carimbo: item['Carimbo de data/hora'],\n      email_destino:\n        \"sidenei.silva@smart.log.br, douglas.lopes@smart.log.br, guilherme.barbosa@smart.log.br, fabiano.carvalho@smart.log.br\"\n    }\n  };\n});\n"
+      },
+      "id": "fd5fb517-dc3f-4967-8f08-4e46b8ef9314",
+      "name": "Filtra e Formata",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files/{{$json[\"id_imagem\"]}}?alt=media\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "608fc346-2c3f-43ed-93fe-1717cba54c6b",
+      "name": "Baixar imagem do Drive",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        168
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u1FmOimJyZcM0VJI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "servicos@smart.log.br",
+        "toEmail": "={{$json.email_destino}}",
+        "subject": "🚚 Chegada de veículo para carregamento - Barry Callebaut",
+        "html": "=={{$json[\"corpo_msg\"]}}\n<p style=\"margin-top:10px;\">\n  Att. Serviços Smart<br>\n  <a href=\"mailto:servicos@smart.log.br\">servicos@smart.log.br</a>\n</p>\n\n",
+        "options": {
+          "attachments": "data"
+        }
+      },
+      "id": "e6362d69-8a4a-4fc2-b590-92d6fd4c71e7",
+      "name": "Enviar E-mail",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        168
+      ],
+      "webhookId": "4fcc2337-aa23-4f25-bb0a-1dc86d3ae4d5",
+      "credentials": {
+        "smtp": {
+          "id": "5aY1bDfu3d81xhBJ",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1VvripsULdhJyj_HQFYSrtRkSwMhob5jBGvNzcO-KcVk/edit?gid=1008336644",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1008336644,
+          "mode": "list",
+          "cachedResultName": "Respostas ao formulário 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VvripsULdhJyj_HQFYSrtRkSwMhob5jBGvNzcO-KcVk/edit#gid=1008336644"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Carimbo de data/hora": "={{ $('Baixar imagem do Drive').item.json.carimbo }}",
+            "E-MAIL ENVIADO": "OK",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "Carimbo de data/hora"
+          ],
+          "schema": [
+            {
+              "id": "Carimbo de data/hora",
+              "displayName": "Carimbo de data/hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "displayName": "NOME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PLACA DO VEICULO",
+              "displayName": "PLACA DO VEICULO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFONE DE CONTATO",
+              "displayName": "TELEFONE DE CONTATO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LOCAL DE EMBARQUE",
+              "displayName": "LOCAL DE EMBARQUE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CONFIRMAÇÃO POR IMAGEM",
+              "displayName": "CONFIRMAÇÃO POR IMAGEM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "E-MAIL ENVIADO",
+              "displayName": "E-MAIL ENVIADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WHATS ENVIADO",
+              "displayName": "WHATS ENVIADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d76c3378-4fbb-4781-9414-9e459cb0ae86",
+      "name": "Atualizar linha na planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        216
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UtT6UeplLnzrCyY7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "429683C4C977415CAAFCfsRVFR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n \"number\": \"{{$json.number}}\",\n    \"text\": \"🚚 *Apresentação de veículo para carregamento*\\n\\n📅 *Carimbo:* {{ $json.carimbo }}\\n👤 *Nome:* {{ $json.corpo_msg.match(/<strong>Nome:<\\/strong> ([^<]+)/)[1] }}\\n🚗 *Placa:* {{ $json.corpo_msg.match(/<strong>Placa:<\\/strong> ([^<]+)/)[1] }}\\n📞 *Telefone:* {{ $json.corpo_msg.match(/<strong>Telefone:<\\/strong> ([^<]+)/)[1] }}\\n🏭 *Local:* {{ $json.corpo_msg.match(/<strong>Local de embarque:<\\/strong> ([^<]+)/)[1] }}\\n\\n📨Um e-mail contendo a imagem de confirmação foi enviado à equipe responsável.\\n\\nSmart Serviços Logísticos\",\n  \"delay\": 500\n}\n",
+        "options": {}
+      },
+      "id": "e95949a2-28fb-4541-9647-5df8a5b06a5c",
+      "name": "Enviar WhatsApp Evolution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql",
+        "query": "SELECT input1.*, input2.*\nFROM input1\nJOIN input2 ON TRUE\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ac0185a2-e25a-4b3f-8c56-5c1758962266",
+      "name": "Merge",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega os dados atuais do item (carimbo, corpo_msg etc.)\nconst base = $json;\n\n// Lista de números para enviar\nconst numeros = [\n  \"5549998166132\",\n  \"5549999285781\"  // <-- coloque aqui o novo número\n  // pode acrescentar mais linhas aqui se quiser\n];\n\n// Para cada número, criamos um item novo\nreturn numeros.map(n => ({\n  json: {\n    ...base,\n    number: n,\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "80110aed-01f0-44db-a907-b16947f9ee64",
+      "name": "Duplicar para vários números"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "33242396-5250-472b-bd5c-86b59445776f",
+              "leftValue": "={{$json.tem_imagem}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        96
+      ],
+      "id": "60fd9b32-f521-4d29-a49b-78493f08c269",
+      "name": "If"
+    }
+  ],
+  "connections": {
+    "Gatilho de agendamento (1min)": {
+      "main": [
+        [
+          {
+            "node": "Ler planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler planilha": {
+      "main": [
+        [
+          {
+            "node": "Filtra e Formata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra e Formata": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar imagem do Drive": {
+      "main": [
+        [
+          {
+            "node": "Enviar E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar E-mail": {
+      "main": [
+        [
+          {
+            "node": "Atualizar linha na planilha",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Duplicar para vários números",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duplicar para vários números": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Baixar imagem do Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "859ih7dhocPvxa5T"
+  },
+  "staticData": {
+    "node:Gatilho de agendamento (1min)": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "400d645f-34a1-456f-9cbf-32bff4263888",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T01:39:50.714Z",
+      "createdAt": "2026-01-16T01:39:50.714Z",
+      "role": "workflow:owner",
+      "workflowId": "HXdbbI3o62rrR8wI",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
