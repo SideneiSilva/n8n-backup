@@ -1,0 +1,365 @@
+{
+  "updatedAt": "2026-01-16T14:17:29.405Z",
+  "createdAt": "2026-01-16T10:33:47.964Z",
+  "id": "RQ0p8E9PSrrhXQcl",
+  "name": "Agente de Agendamento Audio",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+        "options": {
+          "systemMessage": "=##Função\n\nVc deve se apresentar no inicio da primeira conversa do dia como um \"Assistente Virtual\" do Sidenei e responder as mensagens, oferencendo serviços prestados por ele que trabalha com python , power bi e n8n e  caso o cliente queira, agende horário para falar com Sidenei, O usuário irá te informar o horário e o motivo para o agendamento. Caso o cliente queira tirar alguma dúvida sobre um destes processos, como vc é um assistente vc domina todas estes assuntos e pode tirar as dúvidas tecnicas do cliente.\n\n\n\n\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), opere no fuso horário \"GMT -03:00 Horario padrão de Brasilia - São Paulo\". hora atual: {{ $now }}\n\nRegras:\n\n## Criar agendamento\n- Utilize a tool de \"Agendar\" create_event sempre que o usuario falar em \"Agendar\", \"agenda\", \"lembrar\", \"ligar\", \"conversar\", \"mandar\".\n- Crie um evento no Calendario do Google na data e hora solicitada pelo usuario.\n\n\n## Consultar agendamento\n- Utilize a tool \"Consultar\" getall:event sempre que for solicitado para saber os agendamentos feitos.\n- Sempre que for fazer um novo agendamento confira as datas e horarios nessa tool também.\n- Só retorne para o usuário os agendamentos que estão no Google Calendar, não utilize supostos agendamento da memoria, pois o usuário pode ter entrado no Google Calendar e removido o agendamento manualmente.\n\n## Deletar agendamento\n- Utilize a tool \"Deletar\" delete:event sempre que o usuário pedir para \"deletar\", \"excluir\", \"apagar\" um determinado evento.\n- Utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser deletado.\n\n## Atualizar agendamento\n- Sempre que for solicitado para \"atualizar\", \"alterar\", \"mudar\" um determinado evento, utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser atualizado, depois utilize a tool \"Deletar\" delete:event para deletar o evento e por ultimo utilize a tool de \"Agendar\" create_event para criar um novo evento.\n\n## Horarios disponíveis para agendamento\nAgende apenas nos seguintes horarios:\nSegunda-feira: 8:00 as 18:00\nTerça-feira: 8:00 as 18:00\nQuarta-Feira: 8:00 as 18:00\nQuinta-Feira: 8:00 as 18:00\nSexta-feira: 8:00 as 18:00\nSabado: 8:00 as 12:00\nDomingo: nenhum horário disponível\n\n## Não envie o link do Google Calendar para o usuario.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        688,
+        144
+      ],
+      "id": "bdd520b4-d857-4518-b390-af1fa24fad4b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Data e horário escolhido pelo usuário.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `60 minutos depois da data de inicio.`, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `O titulo deve conter o motivo do agendamento e a hora agendada.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        368
+      ],
+      "id": "aaafed50-a730-4f86-b8a0-a7dda68538f4",
+      "name": "Agendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ day: 30 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        368
+      ],
+      "id": "e3a0a010-e3d7-4b4e-98e1-d38b01a996d6",
+      "name": "Consultar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Delete o evento solicitado.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        368
+      ],
+      "id": "7a1d3ad3-91d4-45ae-b8fd-325700e1d0bc",
+      "name": "Deletar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "1- Definir horários de funcionamento\n2- Tirar o link\n3- Colocar memoria\n",
+        "height": 120,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "f99febc2-2d2a-4a5a-b887-fa4365b3f5df",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        368
+      ],
+      "id": "1ca465c7-5076-4311-9158-aa0f2685d19e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5Mz3jLfwtaP7Mj83",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados').item.json['Quem mandou'] }}",
+        "sessionTTL": 3600,
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        368
+      ],
+      "id": "9f03742d-3ac4-456a-ba7f-46c302ca5bfa",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "DgKx8HOpgfzwn4IF",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Dados').item.json['Quem mandou'] }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        144
+      ],
+      "id": "ef0946b5-e57f-4bf7-8717-4017b3e8d106",
+      "name": "Respostas",
+      "credentials": {
+        "evolutionApi": {
+          "id": "jteZg744ZMVEAB4k",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1b37c7c-31d8-4197-b52d-fb989cedfc69",
+              "name": "Quem mandou",
+              "value": "={{ $json.body.data.key.remoteJidAlt }}",
+              "type": "string"
+            },
+            {
+              "id": "cf44d40e-6dd5-4894-ad9b-add342f32a96",
+              "name": "Instancia",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "88fb2660-9f77-4733-a30d-1f92fff8ed7f",
+              "name": "Mensagem",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "99176a6a-3801-4bef-bdcc-ef62d75b4036",
+              "name": "ID da mensagem",
+              "value": "={{ $json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2179841c-bca4-4aac-8acf-10c9a61a479e",
+              "name": "Nome da Pessoa",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        144
+      ],
+      "id": "5307293d-d228-40d8-ba65-e5679eb349fa",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "94f30ae4-4f93-48af-865f-b647c10bf98d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        144
+      ],
+      "id": "28111c14-9db7-4f64-a558-81c96c960bf1",
+      "name": "Webhook1",
+      "webhookId": "94f30ae4-4f93-48af-865f-b647c10bf98d"
+    }
+  ],
+  "connections": {
+    "Agendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deletar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respostas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "43b73d0f-4e9a-4070-92e7-21095a70dec2",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T10:33:47.964Z",
+      "createdAt": "2026-01-16T10:33:47.964Z",
+      "role": "workflow:owner",
+      "workflowId": "RQ0p8E9PSrrhXQcl",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
