@@ -1,0 +1,456 @@
+{
+  "updatedAt": "2026-01-19T01:33:57.794Z",
+  "createdAt": "2026-01-16T01:50:49.172Z",
+  "id": "NgZ20YWQ0BW6C3j3",
+  "name": "IA Atualiza Grupo Whats",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json, null, 2) }}\n",
+        "options": {
+          "systemMessage": "=\n\nVocê receberá três listas:\n\n- viagens_ok_hoje: viagens do dia já faturadas\n- viagens_pendentes_hoje: viagens do dia ainda NÃO faturadas\n- viagens_pendentes_anteriores: viagens de dias anteriores ainda pendentes\n\nRegras:\n- Você se apresenta sempre como Assistente Virtual apenas, e usa uma linguagem descontraida para passar as informações. \n- Ignore completamente qualquer outro motivo além de faturamento.\n- Não mencione campos internos como \"whats\", \"fat\" ou \"whats2\".\n- A resposta deve ser objetiva, clara, de fácil leitura no WhatsApp e com emojis.\n- Nunca adicione informações extras.\n- Sempre inclua a assinatura final.\n\nGere o resumo exatamente neste formato e logo no começo antes do resumo do dia se apresente como assistente virtual, cumprimente de forma descontraida e de acordo com o resultado onde se ficar algo pendente de faturamento, sinalize a equipe de faturamento sobre as pendencias, caso não tenha nada lançado nem faturado, apenas comente que não tivemos lançamentos no dia, e se tudo que foi lançado foi faturado parabenize o time da Operação e do Faturamento pelos esforços em executar as tarefas do dia. A parabenização deve ser logo abaixo do Status Geral.\n\n📊 Resumo do dia Barry\n===================\n\n🔢 Total de viagens lançadas no Control (hoje): <somar viagens_ok_hoje + viagens_pendentes_hoje>\n🧾 Total faturadas (hoje): <somar viagens_ok_hoje>\n⏳ Pendentes de faturamento (hoje): <somar viagens_pendentes_hoje>\n\n✅ Viagens faturadas (hoje):\n<listar viagens_ok_hoje uma por linha>\n\n‼️ Viagens pendentes de faturamento (hoje):\n<listar viagens_pendentes_hoje uma por linha>\n\n📅 Pendências de dias anteriores:\n<listar viagens_pendentes_anteriores uma por linha>\n\n📌 Status geral:\nSe viagens_pendentes_hoje + viagens_pendentes_anteriores = 0 → \"Tudo OK!\"\nSenão → \"Existem pendências a verificar\"\n\n💼 ChatBoot Smart Serviços Logísticos\n\nA seguir estão os dados:\n{{ JSON.stringify($json, null, 2) }}\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        672,
+        0
+      ],
+      "id": "dff36769-1ba7-4ae5-9a3e-1575aa36eb0d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        744,
+        224
+      ],
+      "id": "9fdcfc58-c621-4050-9c6f-9554ff5944f2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5Mz3jLfwtaP7Mj83",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                3,
+                4,
+                5,
+                1
+              ],
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "38384371-42ef-4805-933b-81e837e6b060",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "429683C4C977415CAAFCfsRVFR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "120363423256039598@g.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}\n\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "573af2b4-2de2-4aef-a522-b579768b7156",
+      "name": "Enviar WhatsApp1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?gid=971679055#gid=971679055",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 971679055,
+          "mode": "list",
+          "cachedResultName": "NotasBarry",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+        },
+        "options": {}
+      },
+      "id": "2bb4a8fd-1950-4885-ab3d-766269b5e997",
+      "name": "Ler Planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UtT6UeplLnzrCyY7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const hoje = new Date();\nhoje.setHours(0, 0, 0, 0);\n\nlet viagens_ok_hoje = [];\nlet viagens_pendentes_hoje = [];\nlet viagens_pendentes_anteriores = [];\n\nfor (const item of items) {\n\n    const row = item.json;\n\n    // Nome exato da coluna\n    const dataStr = row[\"Data_Lançamento\"];\n    if (!dataStr || !dataStr.includes(\"/\")) continue;\n\n    // Converter dd/mm/yyyy → Date\n    const [dia, mes, ano] = dataStr.split(\"/\");\n    const data = new Date(Number(ano), Number(mes) - 1, Number(dia));\n    data.setHours(0, 0, 0, 0);\n\n    const viagem = row[\"Viagens\"];\n    const fat = (row[\"Faturado\"] || \"\").trim().toLowerCase();\n\n    const ehHoje = data.getTime() === hoje.getTime();\n    const faturado = fat === \"ok\";\n\n    // CLASSIFICAÇÃO\n    if (ehHoje) {\n\n        if (faturado) {\n            viagens_ok_hoje.push(viagem);\n        } else {\n            viagens_pendentes_hoje.push(viagem);\n        }\n\n    } else {\n        if (!faturado) {\n            viagens_pendentes_anteriores.push(viagem);\n        }\n    }\n}\n\n// Retorno LIMPO para IA\nreturn [{\n    json: {\n        viagens_ok_hoje,\n        viagens_pendentes_hoje,\n        viagens_pendentes_anteriores\n    }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "baa2987d-08f5-4d68-a878-e6353837ee4a",
+      "name": "Organiza os Dados"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Ler Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Planilha": {
+      "main": [
+        [
+          {
+            "node": "Organiza os Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organiza os Dados": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a2db0319-3778-448d-983a-128eec799eac",
+  "activeVersionId": "a2db0319-3778-448d-983a-128eec799eac",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T01:50:49.172Z",
+      "createdAt": "2026-01-16T01:50:49.172Z",
+      "role": "workflow:owner",
+      "workflowId": "NgZ20YWQ0BW6C3j3",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-19T01:33:57.796Z",
+    "createdAt": "2026-01-19T01:33:57.796Z",
+    "versionId": "a2db0319-3778-448d-983a-128eec799eac",
+    "workflowId": "NgZ20YWQ0BW6C3j3",
+    "nodes": [
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ JSON.stringify($json, null, 2) }}\n",
+          "options": {
+            "systemMessage": "=\n\nVocê receberá três listas:\n\n- viagens_ok_hoje: viagens do dia já faturadas\n- viagens_pendentes_hoje: viagens do dia ainda NÃO faturadas\n- viagens_pendentes_anteriores: viagens de dias anteriores ainda pendentes\n\nRegras:\n- Você se apresenta sempre como Assistente Virtual apenas, e usa uma linguagem descontraida para passar as informações. \n- Ignore completamente qualquer outro motivo além de faturamento.\n- Não mencione campos internos como \"whats\", \"fat\" ou \"whats2\".\n- A resposta deve ser objetiva, clara, de fácil leitura no WhatsApp e com emojis.\n- Nunca adicione informações extras.\n- Sempre inclua a assinatura final.\n\nGere o resumo exatamente neste formato e logo no começo antes do resumo do dia se apresente como assistente virtual, cumprimente de forma descontraida e de acordo com o resultado onde se ficar algo pendente de faturamento, sinalize a equipe de faturamento sobre as pendencias, caso não tenha nada lançado nem faturado, apenas comente que não tivemos lançamentos no dia, e se tudo que foi lançado foi faturado parabenize o time da Operação e do Faturamento pelos esforços em executar as tarefas do dia. A parabenização deve ser logo abaixo do Status Geral.\n\n📊 Resumo do dia Barry\n===================\n\n🔢 Total de viagens lançadas no Control (hoje): <somar viagens_ok_hoje + viagens_pendentes_hoje>\n🧾 Total faturadas (hoje): <somar viagens_ok_hoje>\n⏳ Pendentes de faturamento (hoje): <somar viagens_pendentes_hoje>\n\n✅ Viagens faturadas (hoje):\n<listar viagens_ok_hoje uma por linha>\n\n‼️ Viagens pendentes de faturamento (hoje):\n<listar viagens_pendentes_hoje uma por linha>\n\n📅 Pendências de dias anteriores:\n<listar viagens_pendentes_anteriores uma por linha>\n\n📌 Status geral:\nSe viagens_pendentes_hoje + viagens_pendentes_anteriores = 0 → \"Tudo OK!\"\nSenão → \"Existem pendências a verificar\"\n\n💼 ChatBoot Smart Serviços Logísticos\n\nA seguir estão os dados:\n{{ JSON.stringify($json, null, 2) }}\n\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "position": [
+          672,
+          0
+        ],
+        "id": "dff36769-1ba7-4ae5-9a3e-1575aa36eb0d",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          744,
+          224
+        ],
+        "id": "9fdcfc58-c621-4050-9c6f-9554ff5944f2",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "5Mz3jLfwtaP7Mj83",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "triggerAtDay": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  1
+                ],
+                "triggerAtHour": 18
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          0,
+          0
+        ],
+        "id": "38384371-42ef-4805-933b-81e837e6b060",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "apikey",
+                "value": "429683C4C977415CAAFCfsRVFR"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "number",
+                "value": "120363423256039598@g.us"
+              },
+              {
+                "name": "text",
+                "value": "={{ $json.output }}\n\n\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "573af2b4-2de2-4aef-a522-b579768b7156",
+        "name": "Enviar WhatsApp1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1024,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?gid=971679055#gid=971679055",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 971679055,
+            "mode": "list",
+            "cachedResultName": "NotasBarry",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+          },
+          "options": {}
+        },
+        "id": "2bb4a8fd-1950-4885-ab3d-766269b5e997",
+        "name": "Ler Planilha",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          224,
+          0
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UtT6UeplLnzrCyY7",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const hoje = new Date();\nhoje.setHours(0, 0, 0, 0);\n\nlet viagens_ok_hoje = [];\nlet viagens_pendentes_hoje = [];\nlet viagens_pendentes_anteriores = [];\n\nfor (const item of items) {\n\n    const row = item.json;\n\n    // Nome exato da coluna\n    const dataStr = row[\"Data_Lançamento\"];\n    if (!dataStr || !dataStr.includes(\"/\")) continue;\n\n    // Converter dd/mm/yyyy → Date\n    const [dia, mes, ano] = dataStr.split(\"/\");\n    const data = new Date(Number(ano), Number(mes) - 1, Number(dia));\n    data.setHours(0, 0, 0, 0);\n\n    const viagem = row[\"Viagens\"];\n    const fat = (row[\"Faturado\"] || \"\").trim().toLowerCase();\n\n    const ehHoje = data.getTime() === hoje.getTime();\n    const faturado = fat === \"ok\";\n\n    // CLASSIFICAÇÃO\n    if (ehHoje) {\n\n        if (faturado) {\n            viagens_ok_hoje.push(viagem);\n        } else {\n            viagens_pendentes_hoje.push(viagem);\n        }\n\n    } else {\n        if (!faturado) {\n            viagens_pendentes_anteriores.push(viagem);\n        }\n    }\n}\n\n// Retorno LIMPO para IA\nreturn [{\n    json: {\n        viagens_ok_hoje,\n        viagens_pendentes_hoje,\n        viagens_pendentes_anteriores\n    }\n}];\n\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "baa2987d-08f5-4d68-a878-e6353837ee4a",
+        "name": "Organiza os Dados"
+      }
+    ],
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Enviar WhatsApp1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Ler Planilha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ler Planilha": {
+        "main": [
+          [
+            {
+              "node": "Organiza os Dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Organiza os Dados": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SIDENEI DA SILVA",
+    "name": null,
+    "description": null
+  },
+  "tags": []
+}
