@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-28T01:41:34.814Z",
+  "updatedAt": "2026-02-28T02:30:10.801Z",
   "createdAt": "2026-02-28T01:33:10.489Z",
   "id": "0hryP0PHv7GsznzR",
   "name": "Backup_N8N",
@@ -301,6 +301,22 @@
           "name": "GitHub account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "Este fluxo rodo automatico todo dia a meia noite e  buscas por Fluxos que tiveram alterações, e se encontrar cria um Backup",
+        "height": 80,
+        "width": 544,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "1e93b247-55c9-4c31-905d-7535b36cd450",
+      "name": "Sticky Note"
     }
   ],
   "connections": {
@@ -452,8 +468,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e154f3a6-e235-4850-8bfb-f911bb7e3d90",
-  "activeVersionId": "e154f3a6-e235-4850-8bfb-f911bb7e3d90",
+  "versionId": "29e7e126-ac18-431a-89dd-b6b1de71a8e9",
+  "activeVersionId": "29e7e126-ac18-431a-89dd-b6b1de71a8e9",
   "triggerCount": 1,
   "shared": [
     {
@@ -465,9 +481,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-28T01:41:34.817Z",
-    "createdAt": "2026-02-28T01:41:34.817Z",
-    "versionId": "e154f3a6-e235-4850-8bfb-f911bb7e3d90",
+    "updatedAt": "2026-02-28T02:30:10.803Z",
+    "createdAt": "2026-02-28T02:30:10.803Z",
+    "versionId": "29e7e126-ac18-431a-89dd-b6b1de71a8e9",
     "workflowId": "0hryP0PHv7GsznzR",
     "nodes": [
       {
@@ -765,6 +781,22 @@
             "name": "GitHub account"
           }
         }
+      },
+      {
+        "parameters": {
+          "content": "Este fluxo rodo automatico todo dia a meia noite e  buscas por Fluxos que tiveram alterações, e se encontrar cria um Backup",
+          "height": 80,
+          "width": 544,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -944,
+          -192
+        ],
+        "typeVersion": 1,
+        "id": "1e93b247-55c9-4c31-905d-7535b36cd450",
+        "name": "Sticky Note"
       }
     ],
     "connections": {
