@@ -1,0 +1,818 @@
+{
+  "updatedAt": "2026-01-19T16:33:42.673Z",
+  "createdAt": "2026-01-16T01:42:57.214Z",
+  "id": "fkJFYjDGX3sEBWHv",
+  "name": "Barry Inserção NF Control",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "35513403-b071-48c6-bd0e-33b15a89b974",
+      "name": "Gatilho de agendamento (1min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI",
+          "mode": "list",
+          "cachedResultName": "ProcessosBarry",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 971679055,
+          "mode": "list",
+          "cachedResultName": "NotasBarry",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "Informado Whats": "ok"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Data_Lançamento",
+              "displayName": "Data_Lançamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Viagens",
+              "displayName": "Viagens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Informado Whats",
+              "displayName": "Informado Whats",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Faturado",
+              "displayName": "Faturado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        192
+      ],
+      "id": "cd2cf7a6-6261-4c15-8b2e-2991d1de4578",
+      "name": "Atualiza Planilha",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UtT6UeplLnzrCyY7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?gid=971679055#gid=971679055",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 971679055,
+          "mode": "list",
+          "cachedResultName": "NotasBarry",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "detectAutomatically"
+            }
+          }
+        }
+      },
+      "id": "1042e63f-1848-4f3a-b1cf-466f54e2f489",
+      "name": "Ler Planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UtT6UeplLnzrCyY7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "429683C4C977415CAAFCfsRVFR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.texto }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $json.number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3d0469ad-56cb-4729-9120-3c9414e6c66b",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $json;\n\nconst numeros = [\n   \"120363423256039598@g.us\"\n];\n\nreturn numeros.map(n => ({\n  json: {\n    ...base,\n    number: n\n  }\n}));\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "29395609-2fde-4717-a165-d93aa1896450",
+      "name": "Edita Numero Whats"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        224,
+        256
+      ],
+      "id": "cb450be9-7436-4e00-80fa-96f92dd22ef1",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        256
+      ],
+      "id": "34109e19-8c48-4cea-b4cb-98dcc38b54ee",
+      "name": "Wait",
+      "webhookId": "5680c353-66df-4478-85f1-a7a27d339806"
+    },
+    {
+      "parameters": {
+        "jsCode": "const linhas = $json.linhas;\n\nconst viagens = linhas.map(l => `• ${l.viagem}`).join(\"\\n\");\n\nconst texto = \n`📄 *NF Lançada no Control!*\n\n🚚 *Viagens:*\n${viagens}\n\n💼 Smart Serviços Logísticos`;\n\nreturn {\n  number: $json.number,\n  texto\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "50fc3e3d-351d-42fa-a650-c03c83876157",
+      "name": "Monta Mesagem"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.filter(\n  (item, index) => index !== 0\n);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        256
+      ],
+      "id": "527dd62b-7284-4e5e-96f8-3c6bdefadf29",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// itens pendentes\nconst pendentes = items.filter(i => {\n  const status = (i.json[\"Informado Whats\"] || \"\").trim().toUpperCase();\n  return status !== \"OK\";\n});\n\n// SE NÃO EXISTIR NENHUM PENDENTE → NÃO RETORNAR NADA\nif (pendentes.length === 0) {\n  return [];  // Zero itens → IF não roda → Whats não envia → fluxo para aqui\n}\n\n// estrutura para mensagem (apenas se EXISTIR pendente)\nconst mensagem = {\n  json: {\n    linhas: pendentes.map(p => ({\n      row_number: p.json.row_number,\n      viagem: p.json.Viagens\n    }))\n  }\n};\n\n// estrutura para loop\nconst linhas_individuais = pendentes.map(p => ({\n  json: {\n    row_number: p.json.row_number\n  }\n}));\n\n// saída final (2 rotas)\nreturn [\n  mensagem,              // index 0 → Monta Mensagem\n  ...linhas_individuais  // index 1..N → Loop\n];\n"
+      },
+      "id": "1a7807f0-271b-4d04-826e-ab601bbce478",
+      "name": "Filtra e Formata1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Gatilho de agendamento (1min)": {
+      "main": [
+        [
+          {
+            "node": "Ler Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Planilha": {
+      "main": [
+        [
+          {
+            "node": "Filtra e Formata1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edita Numero Whats": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Atualiza Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Planilha": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Mesagem": {
+      "main": [
+        [
+          {
+            "node": "Edita Numero Whats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra e Formata1": {
+      "main": [
+        [
+          {
+            "node": "Monta Mesagem",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Gatilho de agendamento (1min)": {
+      "recurrenceRules": [
+        20
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "54c258d9-7640-425d-aa90-6c309650db40",
+  "activeVersionId": "54c258d9-7640-425d-aa90-6c309650db40",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T01:42:57.214Z",
+      "createdAt": "2026-01-16T01:42:57.214Z",
+      "role": "workflow:owner",
+      "workflowId": "fkJFYjDGX3sEBWHv",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-19T16:33:42.675Z",
+    "createdAt": "2026-01-19T16:33:42.675Z",
+    "versionId": "54c258d9-7640-425d-aa90-6c309650db40",
+    "workflowId": "fkJFYjDGX3sEBWHv",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 10
+              }
+            ]
+          }
+        },
+        "id": "35513403-b071-48c6-bd0e-33b15a89b974",
+        "name": "Gatilho de agendamento (1min)",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -672,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI",
+            "mode": "list",
+            "cachedResultName": "ProcessosBarry",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 971679055,
+            "mode": "list",
+            "cachedResultName": "NotasBarry",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "row_number": "={{ $json.row_number }}",
+              "Informado Whats": "ok"
+            },
+            "matchingColumns": [
+              "row_number"
+            ],
+            "schema": [
+              {
+                "id": "Data_Lançamento",
+                "displayName": "Data_Lançamento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Viagens",
+                "displayName": "Viagens",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Informado Whats",
+                "displayName": "Informado Whats",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Faturado",
+                "displayName": "Faturado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          448,
+          192
+        ],
+        "id": "cd2cf7a6-6261-4c15-8b2e-2991d1de4578",
+        "name": "Atualiza Planilha",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UtT6UeplLnzrCyY7",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit?gid=971679055#gid=971679055",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 971679055,
+            "mode": "list",
+            "cachedResultName": "NotasBarry",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gwEwP862E1P06FMx0w598oGo-uDi3YpxFz67Slsl_ZI/edit#gid=971679055"
+          },
+          "options": {
+            "dataLocationOnSheet": {
+              "values": {
+                "rangeDefinition": "detectAutomatically"
+              }
+            }
+          }
+        },
+        "id": "1042e63f-1848-4f3a-b1cf-466f54e2f489",
+        "name": "Ler Planilha",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -448,
+          160
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UtT6UeplLnzrCyY7",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n-evolution-api.mxor6u.easypanel.host/message/sendText/ChatN8N",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "apikey",
+                "value": "429683C4C977415CAAFCfsRVFR"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "text",
+                "value": "={{ $json.texto }}"
+              },
+              {
+                "name": "number",
+                "value": "={{ $json.number }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3d0469ad-56cb-4729-9120-3c9414e6c66b",
+        "name": "Enviar WhatsApp",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          448,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const base = $json;\n\nconst numeros = [\n   \"120363423256039598@g.us\"\n];\n\nreturn numeros.map(n => ({\n  json: {\n    ...base,\n    number: n\n  }\n}));\n\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          0
+        ],
+        "id": "29395609-2fde-4717-a165-d93aa1896450",
+        "name": "Edita Numero Whats"
+      },
+      {
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          224,
+          256
+        ],
+        "id": "cb450be9-7436-4e00-80fa-96f92dd22ef1",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "amount": 2
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          256
+        ],
+        "id": "34109e19-8c48-4cea-b4cb-98dcc38b54ee",
+        "name": "Wait",
+        "webhookId": "5680c353-66df-4478-85f1-a7a27d339806"
+      },
+      {
+        "parameters": {
+          "jsCode": "const linhas = $json.linhas;\n\nconst viagens = linhas.map(l => `• ${l.viagem}`).join(\"\\n\");\n\nconst texto = \n`📄 *NF Lançada no Control!*\n\n🚚 *Viagens:*\n${viagens}\n\n💼 Smart Serviços Logísticos`;\n\nreturn {\n  number: $json.number,\n  texto\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "50fc3e3d-351d-42fa-a650-c03c83876157",
+        "name": "Monta Mesagem"
+      },
+      {
+        "parameters": {
+          "jsCode": "return items.filter(\n  (item, index) => index !== 0\n);\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          256
+        ],
+        "id": "527dd62b-7284-4e5e-96f8-3c6bdefadf29",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "jsCode": "// itens pendentes\nconst pendentes = items.filter(i => {\n  const status = (i.json[\"Informado Whats\"] || \"\").trim().toUpperCase();\n  return status !== \"OK\";\n});\n\n// SE NÃO EXISTIR NENHUM PENDENTE → NÃO RETORNAR NADA\nif (pendentes.length === 0) {\n  return [];  // Zero itens → IF não roda → Whats não envia → fluxo para aqui\n}\n\n// estrutura para mensagem (apenas se EXISTIR pendente)\nconst mensagem = {\n  json: {\n    linhas: pendentes.map(p => ({\n      row_number: p.json.row_number,\n      viagem: p.json.Viagens\n    }))\n  }\n};\n\n// estrutura para loop\nconst linhas_individuais = pendentes.map(p => ({\n  json: {\n    row_number: p.json.row_number\n  }\n}));\n\n// saída final (2 rotas)\nreturn [\n  mensagem,              // index 0 → Monta Mensagem\n  ...linhas_individuais  // index 1..N → Loop\n];\n"
+        },
+        "id": "1a7807f0-271b-4d04-826e-ab601bbce478",
+        "name": "Filtra e Formata1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -224,
+          160
+        ]
+      }
+    ],
+    "connections": {
+      "Gatilho de agendamento (1min)": {
+        "main": [
+          [
+            {
+              "node": "Ler Planilha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ler Planilha": {
+        "main": [
+          [
+            {
+              "node": "Filtra e Formata1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edita Numero Whats": {
+        "main": [
+          [
+            {
+              "node": "Enviar WhatsApp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Atualiza Planilha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Atualiza Planilha": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Monta Mesagem": {
+        "main": [
+          [
+            {
+              "node": "Edita Numero Whats",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtra e Formata1": {
+        "main": [
+          [
+            {
+              "node": "Monta Mesagem",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SIDENEI DA SILVA",
+    "name": null,
+    "description": null
+  },
+  "tags": []
+}
