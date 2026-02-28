@@ -1,0 +1,1338 @@
+{
+  "updatedAt": "2026-01-16T17:15:20.313Z",
+  "createdAt": "2026-01-16T01:32:36.053Z",
+  "id": "9SuHeHxlp0OlXt5G",
+  "name": "Agente de Agendamento",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=##Função\n\nVc deve se apresentar no inicio da primeira conversa do dia como um \"Assistente Virtual\" do Sidenei e responder as mensagens, oferencendo serviços prestados por ele que trabalha com python , power bi e n8n e  caso o cliente queira, agende horário para falar com Sidenei, O usuário irá te informar o horário e o motivo para o agendamento. Caso o cliente queira tirar alguma dúvida sobre um destes processos, como vc é um assistente vc domina todas estes assuntos e pode tirar as dúvidas tecnicas do cliente.\n\n\n\n\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), opere no fuso horário \"GMT -03:00 Horario padrão de Brasilia - São Paulo\". hora atual: {{ $now }}\n\nRegras:\n\n## Criar agendamento\n- Utilize a tool de \"Agendar\" create_event sempre que o usuario falar em \"Agendar\", \"agenda\", \"lembrar\", \"ligar\", \"conversar\", \"mandar\".\n- Crie um evento no Calendario do Google na data e hora solicitada pelo usuario.\n\n\n## Consultar agendamento\n- Utilize a tool \"Consultar\" getall:event sempre que for solicitado para saber os agendamentos feitos.\n- Sempre que for fazer um novo agendamento confira as datas e horarios nessa tool também.\n- Só retorne para o usuário os agendamentos que estão no Google Calendar, não utilize supostos agendamento da memoria, pois o usuário pode ter entrado no Google Calendar e removido o agendamento manualmente.\n\n## Deletar agendamento\n- Utilize a tool \"Deletar\" delete:event sempre que o usuário pedir para \"deletar\", \"excluir\", \"apagar\" um determinado evento.\n- Utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser deletado.\n\n## Atualizar agendamento\n- Sempre que for solicitado para \"atualizar\", \"alterar\", \"mudar\" um determinado evento, utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser atualizado, depois utilize a tool \"Deletar\" delete:event para deletar o evento e por ultimo utilize a tool de \"Agendar\" create_event para criar um novo evento.\n\n## Horarios disponíveis para agendamento\nAgende apenas nos seguintes horarios:\nSegunda-feira: 8:00 as 18:00\nTerça-feira: 8:00 as 18:00\nQuarta-Feira: 8:00 as 18:00\nQuinta-Feira: 8:00 as 18:00\nSexta-feira: 8:00 as 18:00\nSabado: 8:00 as 12:00\nDomingo: nenhum horário disponível\n\n## Não envie o link do Google Calendar para o usuario.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -3784,
+        -1344
+      ],
+      "id": "6ce3ffe8-3c19-4010-aef5-794c1e68a6d6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Data e horário escolhido pelo usuário.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `60 minutos depois da data de inicio.`, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `O titulo deve conter o motivo do agendamento e a hora agendada.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3712,
+        -1120
+      ],
+      "id": "371a2fdd-b451-47f2-81b1-2e4b9cb2e0d4",
+      "name": "Agendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ day: 30 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3584,
+        -1120
+      ],
+      "id": "a23e5bce-5816-4af9-9d96-9ea5fa23efe3",
+      "name": "Consultar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "sideneisilva1975@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sideneisilva1975@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Delete o evento solicitado.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3456,
+        -1120
+      ],
+      "id": "afd529a2-2057-43b1-9565-a5ed3447bdef",
+      "name": "Deletar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "i8j5zeFlt1XIDFf7",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "94f30ae4-4f93-48af-865f-b647c10bf98d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -5760,
+        -1344
+      ],
+      "id": "68caeb29-3275-48ee-97b3-115d7fcb0b3f",
+      "name": "Webhook",
+      "webhookId": "94f30ae4-4f93-48af-865f-b647c10bf98d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3968,
+        -1120
+      ],
+      "id": "cd55eab0-a17c-40d6-91c5-b0adf4fd46d4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5Mz3jLfwtaP7Mj83",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados').item.json['Quem mandou'] }} {{ $json['Nome da Pessoa'] }}",
+        "sessionTTL": 3600,
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -3840,
+        -1120
+      ],
+      "id": "e24f5497-61f5-45ed-b3a9-21a10940eac2",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "DgKx8HOpgfzwn4IF",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Dados').item.json.RemoteJid }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {
+          "delay": 3000,
+          "linkPreview": true
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -3248,
+        -1344
+      ],
+      "id": "cc06b18e-5743-40f2-8716-c11f54bc7a5a",
+      "name": "Respostas",
+      "credentials": {
+        "evolutionApi": {
+          "id": "jteZg744ZMVEAB4k",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf44d40e-6dd5-4894-ad9b-add342f32a96",
+              "name": "Instancia",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "73b225cc-e419-408d-bd7d-20f0fb5ff844",
+              "name": "RemoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "99176a6a-3801-4bef-bdcc-ef62d75b4036",
+              "name": "ID da mensagem",
+              "value": "={{ $json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "b1b37c7c-31d8-4197-b52d-fb989cedfc69",
+              "name": "Quem mandou",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "string"
+            },
+            {
+              "id": "88fb2660-9f77-4733-a30d-1f92fff8ed7f",
+              "name": "Mensagem",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "3f1403dd-8235-47f1-9a90-02e166441146",
+              "name": "Tipo da Mensagem",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "2179841c-bca4-4aac-8acf-10c9a61a479e",
+              "name": "Nome da Pessoa",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5536,
+        -1344
+      ],
+      "id": "c709cce3-9519-4d53-a456-e8e6842a50a3",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Tipo da Mensagem'] }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "14922560-cd91-4e43-a7bc-b4a065504b02"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5f3274cd-0ac0-48b2-9377-c06c70272ce0",
+                    "leftValue": "={{ $json['Tipo da Mensagem'] }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -5312,
+        -1344
+      ],
+      "id": "1b3cf7b9-3520-488a-8ee3-8177d6f3ae38",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a8d6a8b7-cca7-4594-84b3-0ae3f039ca7c",
+              "name": "message",
+              "value": "={{ $('Dados').item.json.Mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4416,
+        -1440
+      ],
+      "id": "3fac7043-b4d1-4c33-978b-7a56f3c47478",
+      "name": "Set Texte Mensagem"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('Dados').item.json.Instancia }}",
+        "messageId": "={{ $json['ID da mensagem'] }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -5088,
+        -1248
+      ],
+      "id": "43d94bd2-c229-41b1-af8c-bcd1e2d4b9e7",
+      "name": "Obter m dia em base64",
+      "credentials": {
+        "evolutionApi": {
+          "id": "jteZg744ZMVEAB4k",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {
+          "mimeType": "audio/mpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -4864,
+        -1248
+      ],
+      "id": "9f548815-35c7-4b69-8552-0d4351aa7697",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "whisper-large-v3"
+            },
+            {
+              "name": "prompt",
+              "value": "Specify context or spelling"
+            },
+            {
+              "name": "language",
+              "value": "pt"
+            },
+            {
+              "name": "temperature",
+              "value": "0"
+            },
+            {
+              "name": "response_format",
+              "value": "json"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4640,
+        -1248
+      ],
+      "id": "8bff277c-5678-479c-80e4-982fd50913b3",
+      "name": "HTTP Request",
+      "credentials": {
+        "groqApi": {
+          "id": "obkrgc2yHlPKJ51G",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae68d24a-4fe5-4762-8ab8-ee864eb90a63",
+              "name": "message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4416,
+        -1248
+      ],
+      "id": "d7b10c8d-7cc8-44b5-a657-8f75d2fe090f",
+      "name": "Set Audio Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "11586597-b7ad-4766-aa29-722349f7fac5",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "b56fd0b1-86e5-44e9-a19b-db6d625fb77f",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4192,
+        -1344
+      ],
+      "id": "b7fc69ad-8ecb-47df-bb77-0ba609b3e584",
+      "name": "mensagem"
+    }
+  ],
+  "connections": {
+    "Agendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deletar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respostas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Set Texte Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obter m dia em base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Texte Mensagem": {
+      "main": [
+        [
+          {
+            "node": "mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter m dia em base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Set Audio Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio Message": {
+      "main": [
+        [
+          {
+            "node": "mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mensagem": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "859ih7dhocPvxa5T"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1ec2d9b0-6193-4ec5-adea-adcf81aec0e0",
+  "activeVersionId": "1ec2d9b0-6193-4ec5-adea-adcf81aec0e0",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T01:32:36.053Z",
+      "createdAt": "2026-01-16T01:32:36.053Z",
+      "role": "workflow:owner",
+      "workflowId": "9SuHeHxlp0OlXt5G",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-16T17:06:58.928Z",
+    "createdAt": "2026-01-16T17:06:58.928Z",
+    "versionId": "1ec2d9b0-6193-4ec5-adea-adcf81aec0e0",
+    "workflowId": "9SuHeHxlp0OlXt5G",
+    "nodes": [
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.message }}",
+          "options": {
+            "systemMessage": "=##Função\n\nVc deve se apresentar no inicio da primeira conversa do dia como um \"Assistente Virtual\" do Sidenei e responder as mensagens, oferencendo serviços prestados por ele que trabalha com python , power bi e n8n e  caso o cliente queira, agende horário para falar com Sidenei, O usuário irá te informar o horário e o motivo para o agendamento. Caso o cliente queira tirar alguma dúvida sobre um destes processos, como vc é um assistente vc domina todas estes assuntos e pode tirar as dúvidas tecnicas do cliente.\n\n\n\n\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), opere no fuso horário \"GMT -03:00 Horario padrão de Brasilia - São Paulo\". hora atual: {{ $now }}\n\nRegras:\n\n## Criar agendamento\n- Utilize a tool de \"Agendar\" create_event sempre que o usuario falar em \"Agendar\", \"agenda\", \"lembrar\", \"ligar\", \"conversar\", \"mandar\".\n- Crie um evento no Calendario do Google na data e hora solicitada pelo usuario.\n\n\n## Consultar agendamento\n- Utilize a tool \"Consultar\" getall:event sempre que for solicitado para saber os agendamentos feitos.\n- Sempre que for fazer um novo agendamento confira as datas e horarios nessa tool também.\n- Só retorne para o usuário os agendamentos que estão no Google Calendar, não utilize supostos agendamento da memoria, pois o usuário pode ter entrado no Google Calendar e removido o agendamento manualmente.\n\n## Deletar agendamento\n- Utilize a tool \"Deletar\" delete:event sempre que o usuário pedir para \"deletar\", \"excluir\", \"apagar\" um determinado evento.\n- Utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser deletado.\n\n## Atualizar agendamento\n- Sempre que for solicitado para \"atualizar\", \"alterar\", \"mudar\" um determinado evento, utilize a tool \"Consultar\" getall:event para achar o evento em questão para ser atualizado, depois utilize a tool \"Deletar\" delete:event para deletar o evento e por ultimo utilize a tool de \"Agendar\" create_event para criar um novo evento.\n\n## Horarios disponíveis para agendamento\nAgende apenas nos seguintes horarios:\nSegunda-feira: 8:00 as 18:00\nTerça-feira: 8:00 as 18:00\nQuarta-Feira: 8:00 as 18:00\nQuinta-Feira: 8:00 as 18:00\nSexta-feira: 8:00 as 18:00\nSabado: 8:00 as 12:00\nDomingo: nenhum horário disponível\n\n## Não envie o link do Google Calendar para o usuario.\n\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "position": [
+          -3784,
+          -1344
+        ],
+        "id": "6ce3ffe8-3c19-4010-aef5-794c1e68a6d6",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "calendar": {
+            "__rl": true,
+            "value": "sideneisilva1975@gmail.com",
+            "mode": "list",
+            "cachedResultName": "sideneisilva1975@gmail.com"
+          },
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Data e horário escolhido pelo usuário.`, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `60 minutos depois da data de inicio.`, 'string') }}",
+          "additionalFields": {
+            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `O titulo deve conter o motivo do agendamento e a hora agendada.`, 'string') }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          -3712,
+          -1120
+        ],
+        "id": "371a2fdd-b451-47f2-81b1-2e4b9cb2e0d4",
+        "name": "Agendar",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "i8j5zeFlt1XIDFf7",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "calendar": {
+            "__rl": true,
+            "value": "sideneisilva1975@gmail.com",
+            "mode": "list",
+            "cachedResultName": "sideneisilva1975@gmail.com"
+          },
+          "returnAll": true,
+          "timeMax": "={{ $now.plus({ day: 30 }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          -3584,
+          -1120
+        ],
+        "id": "a23e5bce-5816-4af9-9d96-9ea5fa23efe3",
+        "name": "Consultar",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "i8j5zeFlt1XIDFf7",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "calendar": {
+            "__rl": true,
+            "value": "sideneisilva1975@gmail.com",
+            "mode": "list",
+            "cachedResultName": "sideneisilva1975@gmail.com"
+          },
+          "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Delete o evento solicitado.`, 'string') }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          -3456,
+          -1120
+        ],
+        "id": "afd529a2-2057-43b1-9565-a5ed3447bdef",
+        "name": "Deletar",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "i8j5zeFlt1XIDFf7",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "94f30ae4-4f93-48af-865f-b647c10bf98d",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -5760,
+          -1344
+        ],
+        "id": "68caeb29-3275-48ee-97b3-115d7fcb0b3f",
+        "name": "Webhook",
+        "webhookId": "94f30ae4-4f93-48af-865f-b647c10bf98d"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          -3968,
+          -1120
+        ],
+        "id": "cd55eab0-a17c-40d6-91c5-b0adf4fd46d4",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "5Mz3jLfwtaP7Mj83",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Dados').item.json['Quem mandou'] }} {{ $json['Nome da Pessoa'] }}",
+          "sessionTTL": 3600,
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+        "typeVersion": 1.5,
+        "position": [
+          -3840,
+          -1120
+        ],
+        "id": "e24f5497-61f5-45ed-b3a9-21a10940eac2",
+        "name": "Redis Chat Memory",
+        "credentials": {
+          "redis": {
+            "id": "DgKx8HOpgfzwn4IF",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "messages-api",
+          "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+          "remoteJid": "={{ $('Dados').item.json.RemoteJid }}",
+          "messageText": "={{ $json.output }}",
+          "options_message": {
+            "delay": 3000,
+            "linkPreview": true
+          }
+        },
+        "type": "n8n-nodes-evolution-api.evolutionApi",
+        "typeVersion": 1,
+        "position": [
+          -3248,
+          -1344
+        ],
+        "id": "cc06b18e-5743-40f2-8716-c11f54bc7a5a",
+        "name": "Respostas",
+        "credentials": {
+          "evolutionApi": {
+            "id": "jteZg744ZMVEAB4k",
+            "name": "Evolution account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cf44d40e-6dd5-4894-ad9b-add342f32a96",
+                "name": "Instancia",
+                "value": "={{ $json.body.instance }}",
+                "type": "string"
+              },
+              {
+                "id": "73b225cc-e419-408d-bd7d-20f0fb5ff844",
+                "name": "RemoteJid",
+                "value": "={{ $json.body.data.key.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "99176a6a-3801-4bef-bdcc-ef62d75b4036",
+                "name": "ID da mensagem",
+                "value": "={{ $json.body.data.key.id }}",
+                "type": "string"
+              },
+              {
+                "id": "b1b37c7c-31d8-4197-b52d-fb989cedfc69",
+                "name": "Quem mandou",
+                "value": "={{ $json.body.data.key.fromMe }}",
+                "type": "string"
+              },
+              {
+                "id": "88fb2660-9f77-4733-a30d-1f92fff8ed7f",
+                "name": "Mensagem",
+                "value": "={{ $json.body.data.message.conversation }}",
+                "type": "string"
+              },
+              {
+                "id": "3f1403dd-8235-47f1-9a90-02e166441146",
+                "name": "Tipo da Mensagem",
+                "value": "={{ $json.body.data.messageType }}",
+                "type": "string"
+              },
+              {
+                "id": "2179841c-bca4-4aac-8acf-10c9a61a479e",
+                "name": "Nome da Pessoa",
+                "value": "={{ $json.body.data.pushName }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -5536,
+          -1344
+        ],
+        "id": "c709cce3-9519-4d53-a456-e8e6842a50a3",
+        "name": "Dados"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json['Tipo da Mensagem'] }}",
+                      "rightValue": "conversation",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "14922560-cd91-4e43-a7bc-b4a065504b02"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "5f3274cd-0ac0-48b2-9377-c06c70272ce0",
+                      "leftValue": "={{ $json['Tipo da Mensagem'] }}",
+                      "rightValue": "audioMessage",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          -5312,
+          -1344
+        ],
+        "id": "1b3cf7b9-3520-488a-8ee3-8177d6f3ae38",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a8d6a8b7-cca7-4594-84b3-0ae3f039ca7c",
+                "name": "message",
+                "value": "={{ $('Dados').item.json.Mensagem }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4416,
+          -1440
+        ],
+        "id": "3fac7043-b4d1-4c33-978b-7a56f3c47478",
+        "name": "Set Texte Mensagem"
+      },
+      {
+        "parameters": {
+          "resource": "chat-api",
+          "operation": "get-media-base64",
+          "instanceName": "={{ $('Dados').item.json.Instancia }}",
+          "messageId": "={{ $json['ID da mensagem'] }}"
+        },
+        "type": "n8n-nodes-evolution-api.evolutionApi",
+        "typeVersion": 1,
+        "position": [
+          -5088,
+          -1248
+        ],
+        "id": "43d94bd2-c229-41b1-af8c-bcd1e2d4b9e7",
+        "name": "Obter m dia em base64",
+        "credentials": {
+          "evolutionApi": {
+            "id": "jteZg744ZMVEAB4k",
+            "name": "Evolution account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "data.base64",
+          "options": {
+            "mimeType": "audio/mpeg"
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          -4864,
+          -1248
+        ],
+        "id": "9f548815-35c7-4b69-8552-0d4351aa7697",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "groqApi",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "model",
+                "value": "whisper-large-v3"
+              },
+              {
+                "name": "prompt",
+                "value": "Specify context or spelling"
+              },
+              {
+                "name": "language",
+                "value": "pt"
+              },
+              {
+                "name": "temperature",
+                "value": "0"
+              },
+              {
+                "name": "response_format",
+                "value": "json"
+              },
+              {
+                "parameterType": "formBinaryData",
+                "name": "file",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -4640,
+          -1248
+        ],
+        "id": "8bff277c-5678-479c-80e4-982fd50913b3",
+        "name": "HTTP Request",
+        "credentials": {
+          "groqApi": {
+            "id": "obkrgc2yHlPKJ51G",
+            "name": "Groq account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ae68d24a-4fe5-4762-8ab8-ee864eb90a63",
+                "name": "message",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4416,
+          -1248
+        ],
+        "id": "d7b10c8d-7cc8-44b5-a657-8f75d2fe090f",
+        "name": "Set Audio Message"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "11586597-b7ad-4766-aa29-722349f7fac5",
+                "name": "message",
+                "value": "={{ $json.message }}",
+                "type": "string"
+              },
+              {
+                "id": "b56fd0b1-86e5-44e9-a19b-db6d625fb77f",
+                "name": "message",
+                "value": "={{ $json.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4192,
+          -1344
+        ],
+        "id": "b7fc69ad-8ecb-47df-bb77-0ba609b3e584",
+        "name": "mensagem"
+      }
+    ],
+    "connections": {
+      "Agendar": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Deletar": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Respostas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Dados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dados": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Set Texte Mensagem",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Obter m dia em base64",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Texte Mensagem": {
+        "main": [
+          [
+            {
+              "node": "mensagem",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Obter m dia em base64": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Set Audio Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Audio Message": {
+        "main": [
+          [
+            {
+              "node": "mensagem",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "mensagem": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SIDENEI DA SILVA",
+    "name": null,
+    "description": null
+  },
+  "tags": []
+}
