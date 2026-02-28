@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-28T02:24:15.038Z",
+  "updatedAt": "2026-02-28T02:27:43.494Z",
   "createdAt": "2026-01-16T01:51:37.252Z",
   "id": "B0KrKpyQVwHPFero",
   "name": "Barry Emissao X3",
@@ -280,21 +280,7 @@
         0
       ],
       "id": "3da2eb8d-4f3b-42f7-969e-15ca86de42f0",
-      "name": "AgrupaViagens"
-    },
-    {
-      "parameters": {
-        "operation": "addToDate",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.dateTime",
-      "typeVersion": 2,
-      "position": [
-        -736,
-        -160
-      ],
-      "id": "42435ef5-1e43-4ba3-aeac-97a4579e85e0",
-      "name": "Date & Time"
+      "name": "Agrupa_Viagens"
     }
   ],
   "connections": {
@@ -318,7 +304,7 @@
             "index": 0
           },
           {
-            "node": "AgrupaViagens",
+            "node": "Agrupa_Viagens",
             "type": "main",
             "index": 0
           }
@@ -381,7 +367,7 @@
         ]
       ]
     },
-    "AgrupaViagens": {
+    "Agrupa_Viagens": {
       "main": [
         [
           {
@@ -409,8 +395,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c2866792-cc21-43db-ad35-8b66c1815f29",
-  "activeVersionId": "c2866792-cc21-43db-ad35-8b66c1815f29",
+  "versionId": "76563614-6228-41b7-8f55-32a4456c4073",
+  "activeVersionId": "76563614-6228-41b7-8f55-32a4456c4073",
   "triggerCount": 1,
   "shared": [
     {
@@ -422,9 +408,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-28T02:24:15.041Z",
-    "createdAt": "2026-02-28T02:24:15.041Z",
-    "versionId": "c2866792-cc21-43db-ad35-8b66c1815f29",
+    "updatedAt": "2026-02-28T02:27:43.495Z",
+    "createdAt": "2026-02-28T02:27:43.495Z",
+    "versionId": "76563614-6228-41b7-8f55-32a4456c4073",
     "workflowId": "B0KrKpyQVwHPFero",
     "nodes": [
       {
@@ -701,21 +687,7 @@
           0
         ],
         "id": "3da2eb8d-4f3b-42f7-969e-15ca86de42f0",
-        "name": "AgrupaViagens"
-      },
-      {
-        "parameters": {
-          "operation": "addToDate",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.dateTime",
-        "typeVersion": 2,
-        "position": [
-          -736,
-          -160
-        ],
-        "id": "42435ef5-1e43-4ba3-aeac-97a4579e85e0",
-        "name": "Date & Time"
+        "name": "Agrupa_Viagens"
       }
     ],
     "connections": {
@@ -739,7 +711,7 @@
               "index": 0
             },
             {
-              "node": "AgrupaViagens",
+              "node": "Agrupa_Viagens",
               "type": "main",
               "index": 0
             }
@@ -802,7 +774,7 @@
           ]
         ]
       },
-      "AgrupaViagens": {
+      "Agrupa_Viagens": {
         "main": [
           [
             {
