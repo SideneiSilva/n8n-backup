@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-16T14:19:13.731Z",
+  "updatedAt": "2026-03-01T01:14:20.067Z",
   "createdAt": "2026-01-16T01:49:28.995Z",
   "id": "859ih7dhocPvxa5T",
   "name": "Aviso de ERRO",
@@ -75,6 +75,17 @@
           "name": "Evolution account"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -192
+      ],
+      "id": "9c2558f3-c61b-4b73-8145-2bac60764f5c",
+      "name": "When clicking ‘Execute workflow’"
     }
   ],
   "connections": {
@@ -120,7 +131,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "69b45a74-0047-4bdd-800b-b4eaebd7a256",
+  "versionId": "ae6015e5-96ad-4a16-ae59-cfe63d547c51",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
