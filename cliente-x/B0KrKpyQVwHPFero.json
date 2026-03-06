@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-28T02:27:43.494Z",
+  "updatedAt": "2026-03-06T01:59:03.411Z",
   "createdAt": "2026-01-16T01:51:37.252Z",
   "id": "B0KrKpyQVwHPFero",
   "name": "Barry Emissao X3",
@@ -395,8 +395,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "76563614-6228-41b7-8f55-32a4456c4073",
-  "activeVersionId": "76563614-6228-41b7-8f55-32a4456c4073",
+  "versionId": "536b8051-1486-48c0-b9d7-35488a44735e",
+  "activeVersionId": "536b8051-1486-48c0-b9d7-35488a44735e",
   "triggerCount": 1,
   "shared": [
     {
@@ -408,9 +408,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-28T02:27:43.495Z",
-    "createdAt": "2026-02-28T02:27:43.495Z",
-    "versionId": "76563614-6228-41b7-8f55-32a4456c4073",
+    "updatedAt": "2026-03-06T01:59:03.414Z",
+    "createdAt": "2026-03-06T01:59:03.414Z",
+    "versionId": "536b8051-1486-48c0-b9d7-35488a44735e",
     "workflowId": "B0KrKpyQVwHPFero",
     "nodes": [
       {
