@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-26T10:58:16.762Z",
+  "updatedAt": "2026-03-08T03:28:33.473Z",
   "createdAt": "2026-01-16T01:52:08.958Z",
   "id": "VzV9w1KNcpR4F8Fh",
   "name": "GeraQRCode",
@@ -197,7 +197,7 @@
     },
     {
       "parameters": {
-        "path": "TesteCliente",
+        "path": "Cliente de teste",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -352,7 +352,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "890e9178-910e-4b3e-b5e8-1580dc8bad8f",
+  "versionId": "126c8f95-3292-4ec2-86d2-1a2c0fe61f2d",
   "activeVersionId": null,
   "triggerCount": 2,
   "shared": [
