@@ -1,0 +1,369 @@
+{
+  "updatedAt": "2026-03-09T02:37:24.020Z",
+  "createdAt": "2026-03-09T02:20:31.543Z",
+  "id": "9Qoxo4SVEcIqK97W",
+  "name": "GeraQRCode copy 2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar-qr-code-",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        480,
+        656
+      ],
+      "id": "a41b2adb-d9b2-4e17-9465-fdb6d7253214",
+      "name": "Atualiza qr code",
+      "webhookId": "fc1bce8f-c4be-402c-82c4-25cc18fcf3d2"
+    },
+    {
+      "parameters": {
+        "content": "Copie o http de produção  do no INICIALIZAR UMA PAGINA e informe o nome da instancia: TesteCliente e o Numero do Celular.",
+        "height": 460,
+        "width": 860,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "6907cc98-7f0a-4900-99f2-2e51d72c859a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>Gerador de QR Code WhatsApp</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n  <style>\n    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');\n    \n    * {\n      font-family: 'Inter', system-ui, sans-serif;\n    }\n    \n    .fade-in {\n      animation: fadeIn 0.4s ease-out;\n    }\n    \n    @keyframes fadeIn {\n      from { opacity: 0; transform: translateY(16px); }\n      to { opacity: 1; transform: translateY(0); }\n    }\n    \n    .spinner {\n      width: 20px;\n      height: 20px;\n      border: 2px solid #e5e7eb;\n      border-radius: 50%;\n      border-top-color: #3b82f6;\n      animation: spin 1s linear infinite;\n    }\n    \n    @keyframes spin {\n      to { transform: rotate(360deg); }\n    }\n    \n    .progress-circle {\n      transform: rotate(-90deg);\n    }\n    \n    .progress-path {\n      stroke-dasharray: 157;\n      stroke-dashoffset: 157;\n      transition: stroke-dashoffset 1s linear;\n    }\n    \n    .input-focus {\n      transition: all 0.2s ease;\n    }\n    \n    .input-focus:focus {\n      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);\n    }\n  </style>\n</head>\n\n<body class=\"min-h-screen bg-gray-50\">\n  <div class=\"min-h-screen flex items-center justify-center p-4\">\n    <div class=\"w-full max-w-md\">\n\n      <!-- Header -->\n      <div class=\"text-center mb-8 fade-in\">\n        <div class=\"inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6 shadow-sm\">\n          <svg class=\"w-8 h-8 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n            <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z\"/>\n          </svg>\n        </div>\n        <h1 class=\"text-2xl font-semibold text-gray-900 mb-2\">Gerador de QR Code</h1>\n        <p class=\"text-gray-600\">Conecte sua instância WhatsApp rapidamente</p>\n      </div>\n\n      <!-- Main Card -->\n      <div class=\"bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden fade-in\">\n        <div class=\"p-6\">\n\n          <!-- Input -->\n          <div class=\"space-y-6\">\n            <div>\n              <label for=\"instanceName\" class=\"block text-sm font-medium text-gray-900 mb-3\">\n                Nome da Instância\n              </label>\n\n              <input\n                id=\"instanceName\"\n                type=\"text\"\n                placeholder=\"Digite o nome da sua instância\"\n                class=\"input-focus w-full px-4 py-4 rounded-xl border border-gray-300 focus:border-blue-500\"\n              />\n            </div>\n\n            <!-- Botão Gerar -->\n            <button\n              id=\"generateButton\"\n              onclick=\"generateQRCode()\"\n              class=\"w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl\"\n            >\n              <div class=\"flex items-center justify-center space-x-2\">\n                <div id=\"buttonIcon\">\n                  <svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n                    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5\"/>\n                  </svg>\n                </div>\n                <span id=\"buttonText\">Gerar QR Code</span>\n              </div>\n            </button>\n          </div>\n\n          <!-- Área de Loading -->\n          <div id=\"loader\" class=\"hidden text-center py-12\">\n            <div class=\"spinner mx-auto mb-4\"></div>\n            <p class=\"text-gray-900 font-medium\">Gerando QR Code</p>\n          </div>\n\n          <!-- QR -->\n          <div id=\"qrcode\" class=\"hidden text-center py-6\">\n            <div id=\"qrImage\"></div>\n          </div>\n\n        </div>\n      </div>\n\n      <!-- Informativo DEV_SIDENEI -->\n      <div class=\"mt-6 fade-in text-center\">\n        <p class=\"text-sm font-medium text-blue-500\">\n          Desenvolvido por <span class=\"text-blue-600 font-semibold\">DEV_SIDENEI</span>\n        </p>\n      </div>\n\n    </div>\n  </div>\n\n  <script>\n    let timerInterval;\n    let timeLeft = 30;\n\n    async function generateQRCode() {\n      const input = document.getElementById('instanceName');\n      const name = input.value.trim();\n      const loader = document.getElementById('loader');\n      const qrSection = document.getElementById('qrcode');\n      const qrImageContainer = document.getElementById('qrImage');\n\n      if (!name) {\n        alert(\"Digite o nome da instância.\");\n        return;\n      }\n\n      loader.classList.remove('hidden');\n      qrSection.classList.add('hidden');\n\n      try {\n        const endpoint = \"{{ $json.endpoint }}\";\n\n        const res = await fetch(endpoint, {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify({ instance: name })\n        });\n\n        const blob = await res.blob();\n        const url = URL.createObjectURL(blob);\n\n        qrImageContainer.innerHTML = `<img src=\"${url}\" class=\"rounded-xl max-w-64 mx-auto\" />`;\n\n        loader.classList.add(\"hidden\");\n        qrSection.classList.remove(\"hidden\");\n\n      } catch (error) {\n        alert(\"Erro ao gerar QR Code.\");\n        loader.classList.add(\"hidden\");\n      }\n    }\n  </script>\n\n</body>\n</html>\n"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        432,
+        224
+      ],
+      "id": "53909d1c-5a16-4483-8e86-868da2127615",
+      "name": "somente buscar a instancia já criada"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ec85942-3ffc-41dd-a9a4-60a4011351f9",
+              "name": "endpoint",
+              "value": "https://n8n-n8n.mxor6u.easypanel.host/webhook/atualizar-qr-code",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        224
+      ],
+      "id": "e509f7d3-dd71-4566-96a8-26b51a07e282",
+      "name": "Campos Dinâmicos"
+    },
+    {
+      "parameters": {
+        "content": "Gerador de QrCode",
+        "height": 460,
+        "width": 1440,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "0cfa2a71-a4fe-4cdf-a92c-2e19120b22d4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7997d699-2380-48aa-8dc3-b1eac974e16e",
+              "name": "base64",
+              "value": "={{ $json.data.base64.split(',').last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        560
+      ],
+      "id": "aa0669f1-48af-42b8-9176-1c48b73d95b4",
+      "name": "Limpa o código base64"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1376,
+        560
+      ],
+      "id": "58044c73-83b5-4a4e-a0f6-e347aba5aad8",
+      "name": "Converte para base64"
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        752
+      ],
+      "id": "d135af5d-cd5b-403b-be0a-464a9094e7d2",
+      "name": "gera mensagem de conectado!",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04bcabd0-34f6-4e7d-8329-0852b8593d8e",
+              "leftValue": "={{ $json.data.instance.state }}",
+              "rightValue": "open",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        656
+      ],
+      "id": "c1b38948-0f6a-423a-a98c-dc24cceac0ac",
+      "name": "validação se está conectado"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        224
+      ],
+      "id": "3f54de5b-2c7e-4760-927a-e38158859025",
+      "name": "Gera Html Dinâmico"
+    },
+    {
+      "parameters": {
+        "path": "we-do-solution",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        112,
+        224
+      ],
+      "id": "405e7971-ada2-4455-8166-c8872a7f5297",
+      "name": "Inicializa a pagina",
+      "webhookId": "43556e0d-315e-4cd2-9d66-f681b208c8ed"
+    },
+    {
+      "parameters": {
+        "operation": "instance-connect",
+        "instanceName": "={{ $json.body.instance }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        704,
+        656
+      ],
+      "id": "c60fe404-ccae-4b6c-8c7f-5e6cb8c7446c",
+      "name": "Conexão EVO",
+      "credentials": {
+        "evolutionApi": {
+          "id": "jteZg744ZMVEAB4k",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        560
+      ],
+      "id": "2eef2f0a-9907-4b85-b7f9-c8c96f4538bb",
+      "name": "gerar dinamicamente qrcode",
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "somente buscar a instancia já criada": {
+      "main": [
+        [
+          {
+            "node": "Gera Html Dinâmico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Campos Dinâmicos": {
+      "main": [
+        [
+          {
+            "node": "somente buscar a instancia já criada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpa o código base64": {
+      "main": [
+        [
+          {
+            "node": "Converte para base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte para base64": {
+      "main": [
+        [
+          {
+            "node": "gerar dinamicamente qrcode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validação se está conectado": {
+      "main": [
+        [
+          {
+            "node": "Limpa o código base64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "gera mensagem de conectado!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inicializa a pagina": {
+      "main": [
+        [
+          {
+            "node": "Campos Dinâmicos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conexão EVO": {
+      "main": [
+        [
+          {
+            "node": "validação se está conectado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza qr code": {
+      "main": [
+        [
+          {
+            "node": "Conexão EVO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "35cc6788-7831-4232-9724-628235e5a084",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-03-09T02:20:31.543Z",
+      "createdAt": "2026-03-09T02:20:31.543Z",
+      "role": "workflow:owner",
+      "workflowId": "9Qoxo4SVEcIqK97W",
+      "projectId": "jpUEChzxuUXaZ2dQ"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
